@@ -77,15 +77,19 @@ RUN set -eux; \
 	export PATH="/usr/local/go/bin:$PATH"; \
 	go version
 
-ENV GOPATH /workspace/go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+ENV GOPATH /go
+#ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
 # Add in gomobile
 
 RUN go get golang.org/x/mobile/cmd/gomobile
+RUN mv /go/bin/gomobile /usr/local/bin
+
+RUN go get golang.org/x/mobile/cmd/gobind
+RUN mv /go/bin/gobind /usr/local/bin
 
 RUN gomobile init -ndk $ANDROID_HOME/ndk-bundle/
 
-
+ENV GOPATH /workspace/go
