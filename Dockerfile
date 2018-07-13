@@ -85,11 +85,12 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 # Add in gomobile
 
 RUN go get golang.org/x/mobile/cmd/gomobile
-RUN mv /go/bin/gomobile /usr/local/bin
-
 RUN go get golang.org/x/mobile/cmd/gobind
-RUN mv /go/bin/gobind /usr/local/bin
+
+RUN mv /go/bin/* /usr/local/bin
 
 RUN gomobile init -ndk $ANDROID_HOME/ndk-bundle/
+
+RUN mv /go/pkg* /usr/local/pkg
 
 ENV GOPATH /workspace/go
