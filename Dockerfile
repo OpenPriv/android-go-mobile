@@ -79,9 +79,8 @@ RUN set -eux; \
 
 # Set up /workspace
 ENV GOPATH /workspace/go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
-
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
+ENV PATH $GOPATH/bin:$PATH
 
 # Add in gomobile
 
