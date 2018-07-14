@@ -25,9 +25,6 @@ RUN $ANDROID_HOME/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSIO
 # Install NDK
 RUN $ANDROID_HOME/tools/bin/sdkmanager "ndk-bundle"
 
-RUN mkdir /workspace
-WORKDIR /workspace
-
 # Go section of this Dockerfile from Docker golang: https://github.com/docker-library/golang/blob/master/1.10/alpine3.8/Dockerfile
 # Adapted from alpine apk to debian apt
 
@@ -77,19 +74,9 @@ RUN set -eux; \
 	export PATH="/usr/local/go/bin:$PATH"; \
 	go version
 
-# Set up /workspace
+# Setup /workspace
+RUN mkdir /workspace
+
+# Set up GOPATH in /workspace
 ENV GOPATH /workspace/go
-RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 ENV PATH $GOPATH/bin:$PATH
-
-# Add in gomobile
-
-RUN go get golang.org/x/mobile/cmd/gomobile
-RUN go get golang.org/x/mobile/cmd/gobind
-
-RUN gomobile init -ndk $ANDROID_HOME/ndk-bundle/
-
-RUN mv /workspace/go /go
-
-# First step should be
-#     ln -sf /go /workspace/go
