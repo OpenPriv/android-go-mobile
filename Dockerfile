@@ -74,9 +74,20 @@ RUN set -eux; \
 	export PATH="/usr/local/go/bin:$PATH"; \
 	go version
 
+# persist new go in PATH
+ENV PATH /usr/local/go/bin:$PATH
+
 # Setup /workspace
 RUN mkdir /workspace
 
 # Set up GOPATH in /workspace
 ENV GOPATH /workspace/go
 ENV PATH $GOPATH/bin:$PATH
+
+# link $GOPATH to persistent /go
+RUN mkdir /go
+RUN ln -sf /go /workspace/go
+
+# install gomobile
+RUN go get golang.org/x/mobile/cmd/gomobile
+RUN gomobile init -ndk $ANDROID_HOME/ndk-bundle/
