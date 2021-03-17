@@ -78,12 +78,9 @@ RUN set -eux; \
 ENV PATH /usr/local/go/bin:$PATH
 
 # Setup /workspace
-RUN mkdir /workspace
-RUN mkdir /go
-# link $GOPATH to persistent /go
-RUN ln -sf /go /workspace/go
+RUN mkdir /gomobile
 # Set up GOPATH in /workspace
-ENV GOPATH /workspace/go
+ENV GOPATH /gomobile:/go
 ENV PATH $GOPATH/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" "$GOPATH/pkg" && chmod -R 777 "$GOPATH"
 
@@ -91,7 +88,5 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" "$GOPATH/pkg" && chmod -R 777 "$GOPATH"
 RUN go install golang.org/x/mobile/cmd/gomobile@latest
 RUN go install golang.org/x/mobile/cmd/gobind@latest
 
-#RUN go get -u golang.org/x/mobile
-#RUN go get -u golang.org/x/mobile/bind
-
 # RUN gomobile init
+
