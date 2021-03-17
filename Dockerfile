@@ -5,8 +5,8 @@ FROM openjdk:8
 
 ENV SDK_URL="https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" \
     ANDROID_HOME="/usr/local/android-sdk" \
-    ANDROID_VERSION=28 \
-    ANDROID_BUILD_TOOLS_VERSION=28.0.1
+    ANDROID_VERSION=29 \
+    ANDROID_BUILD_TOOLS_VERSION=30.0.2
 
 ## Download Android SDK
 RUN mkdir "$ANDROID_HOME" .android \
@@ -33,7 +33,7 @@ RUN $ANDROID_HOME/tools/bin/sdkmanager "ndk-bundle"
 ## - docker run --rm debian:stretch grep '^hosts:' /etc/nsswitch.conf
 RUN echo 'hosts: files dns' > /etc/nsswitch.conf
 
-ENV GOLANG_VERSION 1.10.3
+ENV GOLANG_VERSION 1.16.2
 
 RUN set -eux; \
 	apt-get update; \
@@ -64,7 +64,7 @@ RUN set -eux; \
 	esac; \
 	\
 	wget -O go.tgz "https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz"; \
-	echo '567b1cc66c9704d1c019c50bef946272e911ec6baf244310f87f4e678be155f2 *go.tgz' | sha256sum -c -; \
+	echo '37ca14287a23cb8ba2ac3f5c3dd8adbc1f7a54b9701a57824bf19a0b271f83ea *go.tgz' | sha256sum -c -; \
 	tar -C /usr/local -xzf go.tgz; \
 	rm go.tgz; \
 	\
@@ -88,5 +88,10 @@ ENV PATH $GOPATH/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" "$GOPATH/pkg" && chmod -R 777 "$GOPATH"
 
 # install gomobile
-RUN go get golang.org/x/mobile/cmd/gomobile
-RUN gomobile init -ndk $ANDROID_HOME/ndk-bundle/
+RUN go install golang.org/x/mobile/cmd/gomobile@latest
+RUN go install golang.org/x/mobile/cmd/gobind@latest
+
+#RUN go get -u golang.org/x/mobile
+#RUN go get -u golang.org/x/mobile/bind
+
+# RUN gomobile init
