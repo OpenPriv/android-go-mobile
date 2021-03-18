@@ -5,6 +5,7 @@ FROM openjdk:8
 
 ENV SDK_URL="https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" \
     ANDROID_HOME="/usr/local/android-sdk" \
+    ANDROID_SDK=$ANDROID_HOME \
     ANDROID_VERSION=29 \
     ANDROID_BUILD_TOOLS_VERSION=30.0.2
 
@@ -24,6 +25,7 @@ RUN $ANDROID_HOME/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSIO
 
 # Install NDK
 RUN $ANDROID_HOME/tools/bin/sdkmanager "ndk-bundle"
+ENV ANDROID_NDK_ROOT $ANDROID_HOME/ndk-bundle
 
 # Go section of this Dockerfile from Docker golang: https://github.com/docker-library/golang/blob/master/1.10/alpine3.8/Dockerfile
 # Adapted from alpine apk to debian apt
@@ -77,12 +79,13 @@ RUN set -eux; \
 # persist new go in PATH
 ENV PATH /usr/local/go/bin:$PATH
 
+ENV GOMOBILEPATH /gomobile
 # Setup /workspace
-RUN mkdir /gomobile
+RUN mkdir $GOMOBILEPATH
 # Set up GOPATH in /workspace
-ENV GOPATH /gomobile:/go
-ENV PATH /gomobile/bin:$PATH
-RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" "$GOPATH/pkg" && chmod -R 777 "$GOPATH"
+ENV GOPATH $GOMOBILEPATH:/go
+ENV PATH $GOMOBILEPATH/bin:$PATH
+RUN mkdir -p "$GOMOBILEPATH/src" "$GOMOBILEPATH/bin" "$GOMOBILEPATH/pkg" && chmod -R 777 "$GOMOBILEPATH"
 
 # install gomobile
 RUN go install golang.org/x/mobile/cmd/gomobile@latest
