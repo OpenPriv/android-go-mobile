@@ -81,7 +81,7 @@ ENV PATH /usr/local/go/bin:$PATH
 RUN mkdir /gomobile
 # Set up GOPATH in /workspace
 ENV GOPATH /gomobile:/go
-ENV PATH $GOPATH/bin:$PATH
+ENV PATH /gomobile/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" "$GOPATH/pkg" && chmod -R 777 "$GOPATH"
 
 # install gomobile
