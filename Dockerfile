@@ -35,7 +35,8 @@ ENV ANDROID_NDK_ROOT $ANDROID_HOME/ndk-bundle
 ## - docker run --rm debian:stretch grep '^hosts:' /etc/nsswitch.conf
 RUN echo 'hosts: files dns' > /etc/nsswitch.conf
 
-ENV GOLANG_VERSION 1.16.2
+ENV GOLANG_VERSION 1.15.10
+ENV GOLANG_SHA256 c1dbca6e0910b41d61a95bf9878f6d6e93d15d884c226b91d9d4b1113c10dd65
 
 RUN set -eux; \
 	apt-get update; \
@@ -66,7 +67,7 @@ RUN set -eux; \
 	esac; \
 	\
 	wget -O go.tgz "https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz"; \
-	echo '37ca14287a23cb8ba2ac3f5c3dd8adbc1f7a54b9701a57824bf19a0b271f83ea *go.tgz' | sha256sum -c -; \
+	echo "$GOLANG_SHA256 *go.tgz" | sha256sum -c -; \
 	tar -C /usr/local -xzf go.tgz; \
 	rm go.tgz; \
 	\
@@ -88,8 +89,8 @@ ENV PATH $GOMOBILEPATH/bin:$PATH
 RUN mkdir -p "$GOMOBILEPATH/src" "$GOMOBILEPATH/bin" "$GOMOBILEPATH/pkg" && chmod -R 777 "$GOMOBILEPATH"
 
 # install gomobile
-RUN go install golang.org/x/mobile/cmd/gomobile@latest
-RUN go install golang.org/x/mobile/cmd/gobind@latest
+RUN go get golang.org/x/mobile/cmd/gomobile
+RUN go get golang.org/x/mobile/cmd/gobind
 
 # RUN gomobile init
 
