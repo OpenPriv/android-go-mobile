@@ -94,5 +94,3 @@ RUN go get golang.org/x/mobile/cmd/gobind
 RUN go get golang.org/x/mobile/bind
 
 RUN gomobile clean
-# RUN gomobile init
-
