@@ -7,6 +7,7 @@ Versions are:
 - 2021.03
 	- Go 1.15.10
 	- Android API 29
+	- NDK 21.0.6113669
 - 2018.07
 	- Go 1.10.3
 	- Android API 28
