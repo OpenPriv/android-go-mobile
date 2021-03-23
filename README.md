@@ -30,8 +30,8 @@ This container has its own GOPATH with only gomobile in it, so to use, you'll ne
       image: openpriv/android-go-mobile:2021.03
       commands:
         - go mod download
-	- gomobile init
-	- make
+        - gomobile init
+        - make
 
 ### Version 2018.07
 
