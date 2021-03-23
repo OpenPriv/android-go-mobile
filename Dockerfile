@@ -84,13 +84,15 @@ ENV GOMOBILEPATH /gomobile
 # Setup /workspace
 RUN mkdir $GOMOBILEPATH
 # Set up GOPATH in /workspace
-ENV GOPATH $GOMOBILEPATH:/go
+ENV GOPATH $GOMOBILEPATH
 ENV PATH $GOMOBILEPATH/bin:$PATH
 RUN mkdir -p "$GOMOBILEPATH/src" "$GOMOBILEPATH/bin" "$GOMOBILEPATH/pkg" && chmod -R 777 "$GOMOBILEPATH"
 
 # install gomobile
 RUN go get golang.org/x/mobile/cmd/gomobile
 RUN go get golang.org/x/mobile/cmd/gobind
+RUN go get golang.org/x/mobile/bind
 
+RUN gomobile clean
 # RUN gomobile init
 
