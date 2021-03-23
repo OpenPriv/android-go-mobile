@@ -2,6 +2,19 @@
 
 This image was built for use with Drone CI but can be used with any docker setup you want.
 
+Versions are:
+
+- 2021.03
+	- Go 1.15.10
+	- Android API 29
+- 2018.07
+	- Go 1.10.3
+	- Android API 28
+
+## Install and Use
+
+### Version 2018.07
+
 This image includes:
 
 - Android SDK, NDK, tools, and API version 28 at `/usr/local/android-sdk`
