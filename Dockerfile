@@ -5,8 +5,9 @@ FROM openjdk:8
 
 ENV SDK_URL="https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" \
     ANDROID_HOME="/usr/local/android-sdk" \
-    ANDROID_VERSION=28 \
-    ANDROID_BUILD_TOOLS_VERSION=28.0.1
+    ANDROID_SDK=$ANDROID_HOME \
+    ANDROID_VERSION=29 \
+    ANDROID_BUILD_TOOLS_VERSION=30.0.2
 
 ## Download Android SDK
 RUN mkdir "$ANDROID_HOME" .android \
@@ -23,7 +24,7 @@ RUN $ANDROID_HOME/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSIO
     "platform-tools"
 
 # Install NDK
-ENV NDK_VER="17.2.4988734" 
+ENV NDK_VER="21.0.6113669"
 RUN $ANDROID_HOME/tools/bin/sdkmanager "ndk;$NDK_VER"
 RUN ln -sf $ANDROID_HOME/ndk/$NDK_VER $ANDROID_HOME/ndk-bundle
 
@@ -35,7 +36,8 @@ RUN ln -sf $ANDROID_HOME/ndk/$NDK_VER $ANDROID_HOME/ndk-bundle
 ## - docker run --rm debian:stretch grep '^hosts:' /etc/nsswitch.conf
 RUN echo 'hosts: files dns' > /etc/nsswitch.conf
 
-ENV GOLANG_VERSION 1.10.3
+ENV GOLANG_VERSION=1.15.10
+ENV GOLANG_SHA256=c1dbca6e0910b41d61a95bf9878f6d6e93d15d884c226b91d9d4b1113c10dd65
 
 RUN set -eux; \
 	apt-get update; \
@@ -66,7 +68,7 @@ RUN set -eux; \
 	esac; \
 	\
 	wget -O go.tgz "https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz"; \
-	echo '567b1cc66c9704d1c019c50bef946272e911ec6baf244310f87f4e678be155f2 *go.tgz' | sha256sum -c -; \
+	echo "$GOLANG_SHA256 *go.tgz" | sha256sum -c -; \
 	tar -C /usr/local -xzf go.tgz; \
 	rm go.tgz; \
 	\
@@ -77,28 +79,26 @@ RUN set -eux; \
 	go version
 
 # persist new go in PATH
-ENV PATH /usr/local/go/bin:$PATH
+ENV PATH=/usr/local/go/bin:$PATH
 
+ENV GOMOBILEPATH=/gomobile
 # Setup /workspace
-RUN mkdir /workspace
-RUN mkdir /go
-# link $GOPATH to persistent /go
-RUN ln -sf /go /workspace/go
+RUN mkdir $GOMOBILEPATH
 # Set up GOPATH in /workspace
-ENV GOPATH /workspace/go
-ENV PATH $GOPATH/bin:$PATH
-RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" "$GOPATH/pkg" && chmod -R 777 "$GOPATH"
+ENV GOPATH=$GOMOBILEPATH
+ENV PATH=$GOMOBILEPATH/bin:$PATH
+RUN mkdir -p "$GOMOBILEPATH/src" "$GOMOBILEPATH/bin" "$GOMOBILEPATH/pkg" && chmod -R 777 "$GOMOBILEPATH"
 
 # install gomobile
-RUN cd /workspace/go/src; \ 
-	mkdir -p golang.org/x; \
-	cd golang.org/x; \
-	git clone https://github.com/golang/mobile.git; \
-	cd mobile; \
-	git checkout 507816974b79c76a5fe70f9580265cd57dc78bbe; 
-	
-RUN go install golang.org/x/mobile/cmd/gomobile
+RUN cd $GOMOBILEPATH/src; \
+       mkdir -p golang.org/x; \
+       cd golang.org/x; \
+       git clone https://github.com/golang/mobile.git; \
+       cd mobile; \
+       git checkout bdb1ca9a1e083af5929a8214e8a056d638ebbf2d;
 
-#RUN go get golang.org/x/mobile/cmd/gomobile@v0.0.0-20200629153529-33b80540585f
+RUN go get golang.org/x/mobile/cmd/gomobile
+RUN go get golang.org/x/mobile/cmd/gobind
+RUN go get golang.org/x/mobile/bind
 
-RUN gomobile init -ndk $ANDROID_HOME/ndk-bundle/
+RUN gomobile clean
