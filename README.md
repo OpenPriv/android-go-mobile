@@ -10,6 +10,7 @@ Versions are:
 - 2018.07
 	- Go 1.10.3
 	- Android API 28
+	- NDK 17.2.4988734
 
 ## Install and Use
 

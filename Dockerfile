@@ -23,7 +23,9 @@ RUN $ANDROID_HOME/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSIO
     "platform-tools"
 
 # Install NDK
-RUN $ANDROID_HOME/tools/bin/sdkmanager "ndk-bundle"
+ENV NDK_VER="17.2.4988734" 
+RUN $ANDROID_HOME/tools/bin/sdkmanager "ndk;$NDK_VER"
+RUN ln -sf $ANDROID_HOME/ndk/$NDK_VER $ANDROID_HOME/ndk-bundle
 
 # Go section of this Dockerfile from Docker golang: https://github.com/docker-library/golang/blob/master/1.10/alpine3.8/Dockerfile
 # Adapted from alpine apk to debian apt
@@ -88,5 +90,15 @@ ENV PATH $GOPATH/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" "$GOPATH/pkg" && chmod -R 777 "$GOPATH"
 
 # install gomobile
-RUN go get golang.org/x/mobile/cmd/gomobile
+RUN cd /workspace/go/src; \ 
+	mkdir -p golang.org/x; \
+	cd golang.org/x; \
+	git clone https://github.com/golang/mobile.git; \
+	cd mobile; \
+	git checkout 507816974b79c76a5fe70f9580265cd57dc78bbe; 
+	
+RUN go install golang.org/x/mobile/cmd/gomobile
+
+#RUN go get golang.org/x/mobile/cmd/gomobile@v0.0.0-20200629153529-33b80540585f
+
 RUN gomobile init -ndk $ANDROID_HOME/ndk-bundle/
